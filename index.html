@@ -200,6 +200,28 @@
 
   <footer>Shift Mate AU v0.3 · Made for working holiday life</footer>
 
+<section class="card">
+  <h2>Data Backup</h2>
+  <p class="muted">
+    Save a copy of your shifts and hourly rate.
+  </p>
+  <button type="button" onclick="downloadBackup()">
+    Download Backup
+  </button>
+
+<label for="restoreFile" style="margin-top:20px;">
+  Restore from Backup
+</label>
+<input
+  id="restoreFile"
+  type="file"
+  accept=".json,application/json"
+>
+<button type="button" id="restoreButton">
+  Restore Backup
+</button>
+</section>
+
 </main>
 
 <script>
@@ -422,6 +444,91 @@ $("addButton").addEventListener("click", () => {
 $("rate").addEventListener("change", save);
 $("month").addEventListener("change", render);
 
+function downloadBackup() {
+  const backup = {
+    app: "Shift Mate AU",
+    version: "0.5",
+    exportedAt: new Date().toISOString(),
+    data: {
+      rate: Number($("rate").value),
+      shifts: shifts
+    }
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(backup, null, 2)],
+    { type: "application/json" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "shift-mate-au-backup.json";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+window.downloadBackup = downloadBackup;
+
+
+$("restoreButton").addEventListener("click", async () => {
+  const file = $("restoreFile").files[0];
+
+  if (!file) {
+    alert("Please select a backup file first.");
+    return;
+  }
+
+  try {
+    const backup = JSON.parse(await file.text());
+
+    if (
+      backup.app !== "Shift Mate AU" ||
+      !backup.data ||
+      !Array.isArray(backup.data.shifts) ||
+      !Number.isFinite(backup.data.rate) ||
+      backup.data.rate < 0 ||
+      !backup.data.shifts.every(s =>
+        typeof s.id === "string" &&
+        /^\d{4}-\d{2}-\d{2}$/.test(s.date) &&
+        /^([01]\d|2[0-3]):[0-5]\d$/.test(s.start) &&
+        /^([01]\d|2[0-3]):[0-5]\d$/.test(s.end) &&
+        Number.isInteger(s.breakTime) &&
+        s.breakTime >= 0 &&
+        Number.isFinite(s.rate) &&
+        s.rate >= 0
+      )
+    ) {
+      throw new Error("Invalid backup format");
+    }
+
+    const confirmed = confirm(
+      "Restore this backup? Your current shifts will be replaced."
+    );
+    if (!confirmed) return;
+
+    const restoredShifts = backup.data.shifts;
+    const restoredRate = backup.data.rate;
+
+    localStorage.setItem(storageKey, JSON.stringify({
+      rate: restoredRate,
+      shifts: restoredShifts
+    }));
+
+    shifts = restoredShifts;
+    $("rate").value = restoredRate;
+    $("restoreFile").value = "";
+    render();
+
+    alert("Backup restored successfully!");
+  } catch (error) {
+    alert("Could not restore backup: " + error.message);
+  }
+});
 render();
 </script>
 </body>
