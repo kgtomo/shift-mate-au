@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Shift Mate">
+  <title>Shift Mate AU</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f3f6fa;
+      color: #172033;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    header {
+      background: #101827;
+      color: white;
+      padding: 32px 20px 28px;
+    }
+    .container { max-width: 550px; margin: auto; padding: 18px; }
+    h1 { margin: 0; font-size: 27px; }
+    h2 { font-size: 18px; margin: 0 0 18px; }
+    .sub { color: #a8b7cb; font-size: 13px; margin-top: 7px; }
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 16px rgba(0,0,0,.035);
+    }
+    .total { background: #192c4a; color: white; }
+    .total .amount { font-size: 37px; font-weight: 750; margin: 12px 0; }
+    .stats { display: flex; justify-content: space-between; gap: 12px; }
+    .stats div { font-size: 13px; color: #b6c8e0; }
+    .stats strong { color: white; display: block; font-size: 19px; margin-top: 5px; }
+    label { font-size: 13px; font-weight: 650; display: block; margin-bottom: 7px; }
+    input {
+      width: 100%;
+      font-size: 16px;
+      padding: 13px;
+      border-radius: 11px;
+      border: 1px solid #dce3ec;
+      background: #fafcff;
+      margin-bottom: 15px;
+      color: #172033;
+    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 700;
+      background: #3478f6;
+      color: white;
+      cursor: pointer;
+    }
+    .shift {
+      padding: 15px 0;
+      border-bottom: 1px solid #edf0f5;
+    }
+    .shift:last-child { border-bottom: none; }
+    .shift-top { display: flex; justify-content: space-between; gap: 8px; }
+    .pay { color: #2274ed; font-weight: 750; }
+    .muted { color: #7b8797; font-size: 13px; margin-top: 6px; }
+    .delete {
+      width: auto;
+      background: #fff0f0;
+      color: #d44;
+      font-size: 12px;
+      padding: 8px 12px;
+      margin-top: 10px;
+    }
+    .empty { color: #8490a0; text-align: center; padding: 20px; }
+    footer { text-align: center; font-size: 12px; color: #9aa5b4; padding: 20px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Shift Mate AU 🇦🇺</h1>
+  <div class="sub">Your shifts. Your money. All in one place.</div>
+</header>
+
+<main class="container">
+
+  <section class="card total">
+    <div>This Month's Earnings</div>
+    <div class="amount" id="totalPay">A$0.00</div>
+    <div class="stats">
+      <div>Hours Worked<strong id="totalHours">0h</strong></div>
+      <div>Total Shifts<strong id="totalShifts">0</strong></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Hourly Rate</h2>
+    <label for="rate">Your hourly rate (AUD)</label>
+    <input id="rate" type="number" min="0" step="0.01" value="30">
+    <div class="muted">Your rate is saved automatically.</div>
+  </section>
+
+  <section class="card">
+    <h2>Add a Shift</h2>
+    <label for="date">Work Date</label>
+    <input id="date" type="date">
+
+    <div class="grid">
+      <div>
+        <label for="start">Start Time</label>
+        <input id="start" type="time" value="09:00">
+      </div>
+      <div>
+        <label for="end">End Time</label>
+        <input id="end" type="time" value="17:00">
+      </div>
+    </div>
+
+    <label for="breakTime">Unpaid Break (minutes)</label>
+    <input id="breakTime" type="number" min="0" step="1" value="30">
+
+    <button id="addButton">+ Save Shift</button>
+  </section>
+
+  <section class="card">
+    <h2>Shift History</h2>
+    <label for="month">Select Month</label>
+    <input id="month" type="month">
+    <div id="shiftList"></div>
+  </section>
+
+  <footer>Shift Mate AU v0.3 · Made for working holiday life</footer>
+
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const storageKey = "shiftMateAU_v03";
+
+function loadData() {
+  try {
+    return JSON.parse(localStorage.getItem(storageKey)) || {};
+  } catch {
+    return {};
+  }
+}
+
+const saved = loadData();
+let shifts = Array.isArray(saved.shifts) ? saved.shifts : [];
+
+const today = new Date();
+const localDate = [
+  today.getFullYear(),
+  String(today.getMonth() + 1).padStart(2, "0"),
+  String(today.getDate()).padStart(2, "0")
+].join("-");
+
+$("date").value = localDate;
+$("month").value = localDate.slice(0, 7);
+$("rate").value = saved.rate ?? 30;
+
+function save() {
+  localStorage.setItem(storageKey, JSON.stringify({
+    rate: Number($("rate").value),
+    shifts
+  }));
+}
+
+function getHours(shift) {
+  const toMinutes = t => {
+    const [h, m] = t.split(":").map(Number);
+    return h * 60 + m;
+  };
+  let duration = toMinutes(shift.end) - toMinutes(shift.start);
+  if (duration < 0) duration += 1440;
+  return Math.max(0, (duration - shift.breakTime) / 60);
+}
+
+function money(amount) {
+  return "A$" + amount.toFixed(2);
+}
+
+function render() {
+  const selected = $("month").value;
+  const monthly = shifts
+    .filter(s => s.date.startsWith(selected))
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  const hours = monthly.reduce((sum, s) => sum + getHours(s), 0);
+  const pay = monthly.reduce((sum, s) => sum + getHours(s) * s.rate, 0);
+
+  $("totalPay").textContent = money(pay);
+  $("totalHours").textContent = hours.toFixed(1) + "h";
+  $("totalShifts").textContent = monthly.length;
+
+  const list = $("shiftList");
+  list.replaceChildren();
+
+  if (!monthly.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "No shifts yet. Add your first shift!";
+    list.appendChild(empty);
+    return;
+  }
+
+  monthly.forEach(s => {
+    const item = document.createElement("div");
+    item.className = "shift";
+
+    const top = document.createElement("div");
+    top.className = "shift-top";
+
+    const date = document.createElement("strong");
+    date.textContent = s.date;
+    const pay = document.createElement("span");
+    pay.className = "pay";
+    pay.textContent = money(getHours(s) * s.rate);
+
+    top.append(date, pay);
+
+    const detail = document.createElement("div");
+    detail.className = "muted";
+    detail.textContent =
+      `${s.start} - ${s.end} · ${getHours(s).toFixed(1)}h · A$${s.rate}/h`;
+
+    const remove = document.createElement("button");
+    remove.className = "delete";
+    remove.textContent = "Delete";
+    remove.onclick = () => {
+      if (confirm("Delete this shift?")) {
+        shifts = shifts.filter(x => x.id !== s.id);
+        save();
+        render();
+      }
+    };
+
+    item.append(top, detail, remove);
+    list.appendChild(item);
+  });
+}
+
+$("addButton").addEventListener("click", () => {
+  const date = $("date").value;
+  const start = $("start").value;
+  const end = $("end").value;
+  const breakTime = Number($("breakTime").value);
+  const rate = Number($("rate").value);
+
+  if (!date || !start || !end ||
+      !Number.isFinite(rate) || rate < 0 ||
+      !Number.isInteger(breakTime) || breakTime < 0) {
+    alert("Please enter valid shift details.");
+    return;
+  }
+
+  if (start === end) {
+    alert("Start and end times must be different.");
+    return;
+  }
+
+  const shift = {
+    id: crypto.randomUUID(),
+    date, start, end, breakTime, rate
+  };
+
+  if (getHours(shift) <= 0) {
+    alert("Break time must be shorter than the shift.");
+    return;
+  }
+
+  shifts.push(shift);
+  save();
+  $("month").value = date.slice(0, 7);
+  render();
+  alert("Shift saved!");
+});
+
+$("rate").addEventListener("change", save);
+$("month").addEventListener("change", render);
+
+render();
+</script>
+</body>
+</html>
