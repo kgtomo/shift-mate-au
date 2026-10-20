@@ -1,534 +1,120 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#101827">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Shift Mate">
-  <title>Shift Mate AU</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: #f3f6fa;
-      color: #172033;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    header {
-      background: #101827;
-      color: white;
-      padding: 32px 20px 28px;
-    }
-    .container { max-width: 550px; margin: auto; padding: 18px; }
-    h1 { margin: 0; font-size: 27px; }
-    h2 { font-size: 18px; margin: 0 0 18px; }
-    .sub { color: #a8b7cb; font-size: 13px; margin-top: 7px; }
-    .card {
-      background: white;
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 3px 16px rgba(0,0,0,.035);
-    }
-    .total { background: #192c4a; color: white; }
-    .total .amount { font-size: 37px; font-weight: 750; margin: 12px 0; }
-    .stats { display: flex; justify-content: space-between; gap: 12px; }
-    .stats div { font-size: 13px; color: #b6c8e0; }
-    .stats strong { color: white; display: block; font-size: 19px; margin-top: 5px; }
-    label { font-size: 13px; font-weight: 650; display: block; margin-bottom: 7px; }
-    input {
-      width: 100%;
-      font-size: 16px;
-      padding: 13px;
-      border-radius: 11px;
-      border: 1px solid #dce3ec;
-      background: #fafcff;
-      margin-bottom: 15px;
-      color: #172033;
-    }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    button {
-      width: 100%;
-      border: 0;
-      border-radius: 12px;
-      padding: 15px;
-      font-size: 15px;
-      font-weight: 700;
-      background: #3478f6;
-      color: white;
-      cursor: pointer;
-    }
-    .shift {
-      padding: 15px 0;
-      border-bottom: 1px solid #edf0f5;
-    }
-    .shift:last-child { border-bottom: none; }
-    .shift-top { display: flex; justify-content: space-between; gap: 8px; }
-    .pay { color: #2274ed; font-weight: 750; }
-    .muted { color: #7b8797; font-size: 13px; margin-top: 6px; }
-    .delete {
-      width: auto;
-      background: #fff0f0;
-      color: #d44;
-      font-size: 12px;
-      padding: 8px 12px;
-      margin-top: 10px;
-    }
-    .empty { color: #8490a0; text-align: center; padding: 20px; }
-    footer { text-align: center; font-size: 12px; color: #9aa5b4; padding: 20px; }
- 
-/* Shift Calendar */
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-}
-.calendar-nav {
-  display: flex;
-  gap: 8px;
-}
-.calendar-nav button {
-  width: 38px;
-  padding: 9px;
-}
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-}
-.calendar-day {
-  position: relative;
-  min-height: 54px;
-  padding: 9px 2px;
-  background: #f3f6fa;
-  color: #172033;
-  font-size: 13px;
-  border-radius: 10px;
-}
-.calendar-day.has-shift {
-  background: #e2edff;
-}
-.calendar-day.has-shift::after {
-  content: "";
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 5px;
-  height: 5px;
-  background: #3478f6;
-  border-radius: 50%;
-}
-.calendar-day.selected {
-  outline: 2px solid #3478f6;
-}
-.calendar-weekday {
-  text-align: center;
-  font-size: 12px;
-  color: #8490a0;
-  padding: 9px 0;
-}
- </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Shift Mate">
+<title>Shift Mate AU</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#172033;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}header{background:#101827;color:white;padding:32px 20px 28px}header>div{max-width:550px;margin:auto}h1{font-size:27px;margin:0}h2{font-size:18px;margin:0 0 16px}.sub{color:#a8b7cb;font-size:13px;margin-top:7px}.container{max-width:550px;margin:auto;padding:18px}.card{background:white;border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 3px 16px #00000009}.total{background:#192c4a;color:white}.total .amount{font-size:37px;font-weight:750;margin:12px 0}.stats{display:flex;justify-content:space-between;gap:12px}.stats>div{font-size:13px;color:#b6c8e0}.stats strong{display:block;color:white;font-size:19px;margin-top:5px}label{display:block;font-size:13px;font-weight:650;margin-bottom:7px}input,select{width:100%;font:inherit;font-size:16px;padding:13px;border-radius:11px;border:1px solid #dce3ec;background:#fafcff;color:#172033;margin-bottom:15px;min-width:0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}button{width:100%;border:0;border-radius:12px;padding:14px;font-size:15px;font-weight:700;background:#3478f6;color:white;cursor:pointer}button.secondary{background:#eaf1ff;color:#2468d7}button.danger{background:#fff0f0;color:#c44}.small{width:auto;padding:8px 11px;font-size:12px}.shift{padding:15px 0;border-bottom:1px solid #edf0f5}.shift:last-child{border-bottom:none}.shift-top{display:flex;justify-content:space-between;gap:8px}.pay{color:#2274ed;font-weight:750}.muted{color:#7b8797;font-size:13px;margin:6px 0 14px}.empty{text-align:center;padding:20px;color:#8490a0}.workplace{display:flex;align-items:center;gap:10px;border-bottom:1px solid #edf0f5;padding:12px 0}.workplace:last-child{border-bottom:none}.workplace-info{flex:1;min-width:0;overflow-wrap:anywhere}.workplace-actions{display:flex;gap:6px}.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.calendar-header h2{margin:0}.calendar-nav{display:flex;gap:8px}.calendar-nav button{width:38px;padding:9px}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.calendar-weekday{text-align:center;font-size:12px;color:#8490a0;padding:9px 0}.calendar-day{position:relative;min-height:54px;padding:9px 2px;background:#f3f6fa;color:#172033;font-size:13px;border-radius:10px}.calendar-day.has-shift{background:#e2edff}.calendar-day.has-shift:after{content:"";position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:5px;height:5px;background:#3478f6;border-radius:50%}.calendar-day.selected{outline:2px solid #3478f6}.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.row-buttons button{flex:1}footer{text-align:center;font-size:12px;color:#9aa5b4;padding:20px}.hint{font-size:12px;color:#7b8797;margin-top:4px}.warning{color:#a53b26;font-size:12px}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #75a7ff;outline-offset:2px}
+</style>
 </head>
 <body>
-
-<header>
-  <h1>Shift Mate AU 🇦🇺</h1>
-  <div class="sub">Your shifts. Your money. All in one place.</div>
-</header>
-
+<header><div><h1>Shift Mate AU 🇦🇺</h1><p class="sub">Your shifts. Your money. All in one place.</p></div></header>
 <main class="container">
-
-<section class="card">
-  <div class="calendar-header">
-    <h2 id="calendarTitle">Calendar</h2>
-    <div class="calendar-nav">
-      <button type="button" id="prevMonth">‹</button>
-      <button type="button" id="nextMonth">›</button>
-    </div>
-  </div>
-  <div id="calendarGrid" class="calendar-grid"></div>
-</section>
-
-  <section class="card total">
-    <div>This Month's Earnings</div>
-    <div class="amount" id="totalPay">A$0.00</div>
-    <div class="stats">
-      <div>Hours Worked<strong id="totalHours">0h</strong></div>
-      <div>Total Shifts<strong id="totalShifts">0</strong></div>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Hourly Rate</h2>
-    <label for="rate">Your hourly rate (AUD)</label>
-    <input id="rate" type="number" min="0" step="0.01" value="30">
-    <div class="muted">Your rate is saved automatically.</div>
-  </section>
-
-  <section class="card">
-    <h2>Add a Shift</h2>
-    <label for="date">Work Date</label>
-    <input id="date" type="date">
-
-    <div class="grid">
-      <div>
-        <label for="start">Start Time</label>
-        <input id="start" type="time" value="09:00">
-      </div>
-      <div>
-        <label for="end">End Time</label>
-        <input id="end" type="time" value="17:00">
-      </div>
-    </div>
-
-    <label for="breakTime">Unpaid Break (minutes)</label>
-    <input id="breakTime" type="number" min="0" step="1" value="30">
-
-    <button id="addButton">+ Save Shift</button>
-  </section>
-
-  <section class="card">
-    <h2>Shift History</h2>
-    <label for="month">Select Month</label>
-    <input id="month" type="month">
-    <div id="shiftList"></div>
-  </section>
-
-  <footer>Shift Mate AU v0.3 · Made for working holiday life</footer>
-
-<section class="card">
-  <h2>Data Backup</h2>
-  <p class="muted">
-    Save a copy of your shifts and hourly rate.
-  </p>
-  <button type="button" onclick="downloadBackup()">
-    Download Backup
-  </button>
-
-<label for="restoreFile" style="margin-top:20px;">
-  Restore from Backup
-</label>
-<input
-  id="restoreFile"
-  type="file"
-  accept=".json,application/json"
->
-<button type="button" id="restoreButton">
-  Restore Backup
-</button>
-</section>
-
+<section class="card total"><div>Selected Month's Earnings</div><div class="amount" id="totalPay">A$0.00</div><div class="stats"><div>Hours Worked<strong id="totalHours">0h</strong></div><div>Total Shifts<strong id="totalShifts">0</strong></div></div></section>
+<section class="card"><div class="calendar-header"><h2 id="calendarTitle">Calendar</h2><div class="calendar-nav"><button type="button" id="prevMonth" aria-label="Previous month">‹</button><button type="button" id="nextMonth" aria-label="Next month">›</button></div></div><div id="calendarGrid" class="calendar-grid"></div></section>
+<section class="card"><h2>My Workplaces</h2><div id="workplaceList"></div><label for="workplaceName">Workplace name</label><input id="workplaceName" placeholder="e.g. Cafe A" maxlength="80"><label for="workplaceRate">Hourly rate (AUD)</label><input id="workplaceRate" type="number" min="0" step="0.01" value="30"><button id="addWorkplace" type="button">+ Add Workplace</button><p class="hint">Rates are before tax. To change a workplace's rate, use Edit.</p></section>
+<section class="card"><h2>Add a Shift</h2><label for="date">Work Date</label><input id="date" type="date"><label for="shiftWorkplace">Workplace</label><select id="shiftWorkplace"></select><div class="grid"><div><label for="start">Start Time</label><input id="start" type="time" value="09:00"></div><div><label for="end">End Time</label><input id="end" type="time" value="17:00"></div></div><label for="breakTime">Unpaid Break (minutes)</label><input id="breakTime" type="number" min="0" step="1" value="30"><button id="addButton" type="button">+ Save Shift</button></section>
+<section class="card"><h2>Shift History</h2><label for="month">Select Month</label><input id="month" type="month"><div id="shiftList"></div></section>
+<section class="card"><h2>Data Backup</h2><p class="muted">Save your workplaces, shifts and hourly rates to a JSON file.</p><button type="button" id="downloadBackup">Download Backup</button><label for="restoreFile" style="margin-top:20px">Restore from Backup</label><input type="file" id="restoreFile" accept=".json,application/json"><button type="button" id="restoreButton" class="secondary">Restore Backup</button><p class="warning">Restoring replaces the data in this browser. Download a backup first.</p></section>
+<footer>Shift Mate AU v0.5 · Made for working holiday life</footer>
 </main>
-
 <script>
+"use strict";
 const $ = id => document.getElementById(id);
+// Keep the original key to preserve existing v0.3/v0.4/v0.5 shifts in this browser.
 const storageKey = "shiftMateAU_v03";
-
-function loadData() {
-  try {
-    return JSON.parse(localStorage.getItem(storageKey)) || {};
-  } catch {
-    return {};
-  }
+function loadData(){try{return JSON.parse(localStorage.getItem(storageKey))||{}}catch{return {}}}
+const saved=loadData();
+let shifts=Array.isArray(saved.shifts)?saved.shifts:[];
+let workplaces=Array.isArray(saved.workplaces)?saved.workplaces:[];
+const legacyRate=Number.isFinite(Number(saved.rate))&&Number(saved.rate)>=0?Number(saved.rate):30;
+const today=new Date();
+const localDate=[today.getFullYear(),String(today.getMonth()+1).padStart(2,"0"),String(today.getDate()).padStart(2,"0")].join("-");
+$("date").value=localDate;
+$("month").value=localDate.slice(0,7);
+$("workplaceRate").value=legacyRate;
+function uid(){return typeof crypto.randomUUID==="function"?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2)}
+function save(){localStorage.setItem(storageKey,JSON.stringify({rate:legacyRate,shifts,workplaces}))}
+function validRate(v){return typeof v==="number"&&Number.isFinite(v)&&v>=0}
+function money(amount){return "A$"+amount.toFixed(2)}
+function getHours(s){const mins=t=>{const [h,m]=t.split(":").map(Number);return h*60+m};let duration=mins(s.end)-mins(s.start);if(duration<0)duration+=1440;return Math.max(0,(duration-s.breakTime)/60)}
+function workplaceName(id){const w=workplaces.find(x=>x.id===id);return w?w.name:"Previous shift (unassigned)"}
+function renderWorkplaces(){
+ const list=$("workplaceList");list.replaceChildren();
+ if(!workplaces.length){const p=document.createElement("p");p.className="muted";p.textContent="No workplaces yet. Add one below.";list.append(p)}
+ workplaces.forEach(w=>{
+  const row=document.createElement("div");row.className="workplace";
+  const info=document.createElement("div");info.className="workplace-info";
+  const name=document.createElement("strong");name.textContent=w.name;
+  const rate=document.createElement("div");rate.className="muted";rate.textContent=money(w.rate)+" / hour";info.append(name,rate);
+  const actions=document.createElement("div");actions.className="workplace-actions";
+  const edit=document.createElement("button");edit.className="secondary small";edit.textContent="Edit";
+  edit.onclick=()=>{const name=prompt("Workplace name",w.name);if(name===null)return;const trimmed=name.trim();if(!trimmed){alert("Enter a workplace name.");return}const rateText=prompt("Hourly rate in AUD",String(w.rate));if(rateText===null)return;const next=Number(rateText);if(rateText.trim()===""||!validRate(next)){alert("Enter a valid hourly rate.");return}w.name=trimmed;w.rate=next;save();render()};
+  const remove=document.createElement("button");remove.className="danger small";remove.textContent="Delete";
+  remove.onclick=()=>{if(shifts.some(s=>s.workplaceId===w.id)){alert("This workplace has shifts. Delete those shifts first, or keep the workplace.");return}if(!confirm("Delete this workplace?"))return;workplaces=workplaces.filter(x=>x.id!==w.id);save();render()};
+  actions.append(edit,remove);row.append(info,actions);list.append(row);
+ });
+ const select=$("shiftWorkplace"),previous=select.value;select.replaceChildren();
+ if(!workplaces.length){const option=document.createElement("option");option.value="";option.textContent="Add a workplace first";select.append(option)}
+ else workplaces.forEach(w=>{const option=document.createElement("option");option.value=w.id;option.textContent=w.name+" · "+money(w.rate)+"/h";select.append(option)});
+ if(workplaces.some(w=>w.id===previous))select.value=previous;
 }
-
-const saved = loadData();
-let shifts = Array.isArray(saved.shifts) ? saved.shifts : [];
-
-const today = new Date();
-const localDate = [
-  today.getFullYear(),
-  String(today.getMonth() + 1).padStart(2, "0"),
-  String(today.getDate()).padStart(2, "0")
-].join("-");
-
-$("date").value = localDate;
-$("month").value = localDate.slice(0, 7);
-$("rate").value = saved.rate ?? 30;
-
-function save() {
-  localStorage.setItem(storageKey, JSON.stringify({
-    rate: Number($("rate").value),
-    shifts
-  }));
+function renderCalendar(){
+ const selected=$("month").value;if(!/^\d{4}-\d{2}$/.test(selected))return;
+ const [year,month]=selected.split("-").map(Number);const first=new Date(year,month-1,1);const count=new Date(year,month,0).getDate();const offset=(first.getDay()+6)%7;
+ $("calendarTitle").textContent=first.toLocaleDateString("en-AU",{month:"long",year:"numeric"});
+ const grid=$("calendarGrid");grid.replaceChildren();
+ ["M","T","W","T","F","S","S"].forEach(t=>{const d=document.createElement("div");d.className="calendar-weekday";d.textContent=t;grid.append(d)});
+ for(let i=0;i<offset;i++)grid.append(document.createElement("div"));
+ for(let day=1;day<=count;day++){
+  const date=selected+"-"+String(day).padStart(2,"0");const b=document.createElement("button");b.type="button";b.className="calendar-day";b.textContent=day;b.setAttribute("aria-label",date);
+  if(shifts.some(s=>s.date===date))b.classList.add("has-shift");if($("date").value===date)b.classList.add("selected");
+  b.onclick=()=>{$("date").value=date;renderCalendar()};grid.append(b);
+ }
 }
-
-function getHours(shift) {
-  const toMinutes = t => {
-    const [h, m] = t.split(":").map(Number);
-    return h * 60 + m;
-  };
-  let duration = toMinutes(shift.end) - toMinutes(shift.start);
-  if (duration < 0) duration += 1440;
-  return Math.max(0, (duration - shift.breakTime) / 60);
+function render(){
+ renderWorkplaces();renderCalendar();
+ const selected=$("month").value;const monthly=shifts.filter(s=>s.date.startsWith(selected)).sort((a,b)=>b.date.localeCompare(a.date));
+ const hours=monthly.reduce((n,s)=>n+getHours(s),0),pay=monthly.reduce((n,s)=>n+getHours(s)*s.rate,0);
+ $("totalPay").textContent=money(pay);$("totalHours").textContent=hours.toFixed(1)+"h";$("totalShifts").textContent=monthly.length;
+ const list=$("shiftList");list.replaceChildren();if(!monthly.length){const p=document.createElement("div");p.className="empty";p.textContent="No shifts yet. Add your first shift!";list.append(p);return}
+ monthly.forEach(s=>{
+  const item=document.createElement("div");item.className="shift";const top=document.createElement("div");top.className="shift-top";
+  const date=document.createElement("strong");date.textContent=s.date;const pay=document.createElement("span");pay.className="pay";pay.textContent=money(getHours(s)*s.rate);top.append(date,pay);
+  const detail=document.createElement("div");detail.className="muted";detail.textContent=workplaceName(s.workplaceId)+" · "+s.start+" - "+s.end+" · "+getHours(s).toFixed(1)+"h · "+money(s.rate)+"/h";
+  const del=document.createElement("button");del.className="danger small";del.textContent="Delete";del.onclick=()=>{if(!confirm("Delete this shift?"))return;shifts=shifts.filter(x=>x.id!==s.id);save();render()};item.append(top,detail,del);list.append(item)
+ });
 }
-
-function money(amount) {
-  return "A$" + amount.toFixed(2);
-}
-
-function renderCalendar() {
-  const selected = $("month").value;
-  if (!/^\d{4}-\d{2}$/.test(selected)) return;
-
-  const [year, month] = selected.split("-").map(Number);
-  const firstDay = new Date(year, month - 1, 1);
-  const daysInMonth = new Date(year, month, 0).getDate();
-  const offset = (firstDay.getDay() + 6) % 7;
-
-  $("calendarTitle").textContent =
-    firstDay.toLocaleDateString("en-AU", {
-      month: "long",
-      year: "numeric"
-    });
-
-  const grid = $("calendarGrid");
-  grid.replaceChildren();
-
-  ["M", "T", "W", "T", "F", "S", "S"].forEach(day => {
-    const label = document.createElement("div");
-    label.className = "calendar-weekday";
-    label.textContent = day;
-    grid.appendChild(label);
-  });
-
-  for (let i = 0; i < offset; i++) {
-    grid.appendChild(document.createElement("div"));
-  }
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    const date = selected + "-" + String(day).padStart(2, "0");
-    const button = document.createElement("button");
-
-    button.type = "button";
-    button.className = "calendar-day";
-    button.textContent = day;
-
-    if (shifts.some(s => s.date === date)) {
-      button.classList.add("has-shift");
-    }
-
-    if ($("date").value === date) {
-      button.classList.add("selected");
-    }
-
-    button.addEventListener("click", () => {
-      $("date").value = date;
-      renderCalendar();
-    });
-
-    grid.appendChild(button);
-  }
-}
-
-$("prevMonth").addEventListener("click", () => {
-  const [y, m] = $("month").value.split("-").map(Number);
-  const d = new Date(y, m - 2, 1);
-  $("month").value =
-    d.getFullYear() + "-" +
-    String(d.getMonth() + 1).padStart(2, "0");
-  render();
-});
-
-$("nextMonth").addEventListener("click", () => {
-  const [y, m] = $("month").value.split("-").map(Number);
-  const d = new Date(y, m, 1);
-  $("month").value =
-    d.getFullYear() + "-" +
-    String(d.getMonth() + 1).padStart(2, "0");
-  render();
-});
-
-$("date").addEventListener("change", renderCalendar);
-function render() {
-  renderCalendar();
-  const selected = $("month").value;
-  const monthly = shifts
-    .filter(s => s.date.startsWith(selected))
-    .sort((a, b) => b.date.localeCompare(a.date));
-
-  const hours = monthly.reduce((sum, s) => sum + getHours(s), 0);
-  const pay = monthly.reduce((sum, s) => sum + getHours(s) * s.rate, 0);
-
-  $("totalPay").textContent = money(pay);
-  $("totalHours").textContent = hours.toFixed(1) + "h";
-  $("totalShifts").textContent = monthly.length;
-
-  const list = $("shiftList");
-  list.replaceChildren();
-
-  if (!monthly.length) {
-    const empty = document.createElement("div");
-    empty.className = "empty";
-    empty.textContent = "No shifts yet. Add your first shift!";
-    list.appendChild(empty);
-    return;
-  }
-
-  monthly.forEach(s => {
-    const item = document.createElement("div");
-    item.className = "shift";
-
-    const top = document.createElement("div");
-    top.className = "shift-top";
-
-    const date = document.createElement("strong");
-    date.textContent = s.date;
-    const pay = document.createElement("span");
-    pay.className = "pay";
-    pay.textContent = money(getHours(s) * s.rate);
-
-    top.append(date, pay);
-
-    const detail = document.createElement("div");
-    detail.className = "muted";
-    detail.textContent =
-      `${s.start} - ${s.end} · ${getHours(s).toFixed(1)}h · A$${s.rate}/h`;
-
-    const remove = document.createElement("button");
-    remove.className = "delete";
-    remove.textContent = "Delete";
-    remove.onclick = () => {
-      if (confirm("Delete this shift?")) {
-        shifts = shifts.filter(x => x.id !== s.id);
-        save();
-        render();
-      }
-    };
-
-    item.append(top, detail, remove);
-    list.appendChild(item);
-  });
-}
-
-$("addButton").addEventListener("click", () => {
-  const date = $("date").value;
-  const start = $("start").value;
-  const end = $("end").value;
-  const breakTime = Number($("breakTime").value);
-  const rate = Number($("rate").value);
-
-  if (!date || !start || !end ||
-      !Number.isFinite(rate) || rate < 0 ||
-      !Number.isInteger(breakTime) || breakTime < 0) {
-    alert("Please enter valid shift details.");
-    return;
-  }
-
-  if (start === end) {
-    alert("Start and end times must be different.");
-    return;
-  }
-
-  const shift = {
-    id: crypto.randomUUID(),
-    date, start, end, breakTime, rate
-  };
-
-  if (getHours(shift) <= 0) {
-    alert("Break time must be shorter than the shift.");
-    return;
-  }
-
-  shifts.push(shift);
-  save();
-  $("month").value = date.slice(0, 7);
-  render();
-  alert("Shift saved!");
-});
-
-$("rate").addEventListener("change", save);
-$("month").addEventListener("change", render);
-
-function downloadBackup() {
-  const backup = {
-    app: "Shift Mate AU",
-    version: "0.5",
-    exportedAt: new Date().toISOString(),
-    data: {
-      rate: Number($("rate").value),
-      shifts: shifts
-    }
-  };
-
-  const blob = new Blob(
-    [JSON.stringify(backup, null, 2)],
-    { type: "application/json" }
-  );
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = "shift-mate-au-backup.json";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-window.downloadBackup = downloadBackup;
-
-
-$("restoreButton").addEventListener("click", async () => {
-  const file = $("restoreFile").files[0];
-
-  if (!file) {
-    alert("Please select a backup file first.");
-    return;
-  }
-
-  try {
-    const backup = JSON.parse(await file.text());
-
-    if (
-      backup.app !== "Shift Mate AU" ||
-      !backup.data ||
-      !Array.isArray(backup.data.shifts) ||
-      !Number.isFinite(backup.data.rate) ||
-      backup.data.rate < 0 ||
-      !backup.data.shifts.every(s =>
-        typeof s.id === "string" &&
-        /^\d{4}-\d{2}-\d{2}$/.test(s.date) &&
-        /^([01]\d|2[0-3]):[0-5]\d$/.test(s.start) &&
-        /^([01]\d|2[0-3]):[0-5]\d$/.test(s.end) &&
-        Number.isInteger(s.breakTime) &&
-        s.breakTime >= 0 &&
-        Number.isFinite(s.rate) &&
-        s.rate >= 0
-      )
-    ) {
-      throw new Error("Invalid backup format");
-    }
-
-    const confirmed = confirm(
-      "Restore this backup? Your current shifts will be replaced."
-    );
-    if (!confirmed) return;
-
-    const restoredShifts = backup.data.shifts;
-    const restoredRate = backup.data.rate;
-
-    localStorage.setItem(storageKey, JSON.stringify({
-      rate: restoredRate,
-      shifts: restoredShifts
-    }));
-
-    shifts = restoredShifts;
-    $("rate").value = restoredRate;
-    $("restoreFile").value = "";
-    render();
-
-    alert("Backup restored successfully!");
-  } catch (error) {
-    alert("Could not restore backup: " + error.message);
-  }
-});
+$("addWorkplace").onclick=()=>{const name=$("workplaceName").value.trim();const str=$("workplaceRate").value;const rate=Number(str);if(!name||str.trim()===""||!validRate(rate)){alert("Enter a workplace name and valid hourly rate.");return}workplaces.push({id:uid(),name,rate});$("workplaceName").value="";save();render()};
+$("addButton").onclick=()=>{
+ const date=$("date").value,start=$("start").value,end=$("end").value,breakRaw=$("breakTime").value,breakTime=Number(breakRaw);const w=workplaces.find(w=>w.id===$("shiftWorkplace").value);
+ if(!w){alert("Add a workplace first.");return}
+ if(!date||!start||!end||start===end||breakRaw.trim()===""||!Number.isInteger(breakTime)||breakTime<0){alert("Please enter valid shift details.");return}
+ const shift={id:uid(),date,start,end,breakTime,rate:w.rate,workplaceId:w.id};if(getHours(shift)<=0){alert("Break must be shorter than the shift.");return}
+ shifts.push(shift);save();$("month").value=date.slice(0,7);render();alert("Shift saved!");
+};
+function changeMonth(delta){const [y,m]=$("month").value.split("-").map(Number);const d=new Date(y,m-1+delta,1);$("month").value=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");render()}
+$("prevMonth").onclick=()=>changeMonth(-1);$("nextMonth").onclick=()=>changeMonth(1);$("date").addEventListener("change",renderCalendar);$("month").addEventListener("change",render);
+$("downloadBackup").onclick=()=>{
+ const backup={app:"Shift Mate AU",version:"0.5",exportedAt:new Date().toISOString(),data:{rate:legacyRate,shifts,workplaces}};
+ const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="shift-mate-au-backup.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+};
+function validShift(s){return s&&typeof s.id==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(s.date)&&/^([01]\d|2[0-3]):[0-5]\d$/.test(s.start)&&/^([01]\d|2[0-3]):[0-5]\d$/.test(s.end)&&Number.isInteger(s.breakTime)&&s.breakTime>=0&&validRate(s.rate)&&(!("workplaceId" in s)||typeof s.workplaceId==="string")}
+function validWorkplace(w){return w&&typeof w.id==="string"&&typeof w.name==="string"&&w.name.trim().length>0&&validRate(w.rate)}
+$("restoreButton").onclick=async()=>{
+ const file=$("restoreFile").files[0];if(!file){alert("Select a backup file first.");return}
+ try{
+  const backup=JSON.parse(await file.text());const data=backup.data;
+  if(backup.app!=="Shift Mate AU"||!data||!Array.isArray(data.shifts)||!data.shifts.every(validShift)||!validRate(data.rate)||("workplaces" in data&&(!Array.isArray(data.workplaces)||!data.workplaces.every(validWorkplace))))throw Error("Invalid backup format");
+  const ws=Array.isArray(data.workplaces)?data.workplaces:[];
+  if(!confirm("Restore this backup? It will REPLACE all shifts and workplaces stored in this browser."))return;
+  const toStore={rate:data.rate,shifts:data.shifts,workplaces:ws};localStorage.setItem(storageKey,JSON.stringify(toStore));shifts=toStore.shifts;workplaces=toStore.workplaces;$("workplaceRate").value=data.rate;$("restoreFile").value="";render();alert("Backup restored successfully!");
+ }catch(e){alert("Could not restore backup: "+e.message)}
+};
 render();
 </script>
 </body>
